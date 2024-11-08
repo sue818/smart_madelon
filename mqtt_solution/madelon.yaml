@@ -1,0 +1,59 @@
+mqtt:
+  climate:
+    - name: 新风
+      unique_id: madelon_air
+      power_command_topic: "madelon/ctrl/power"
+      mode_state_topic: "madelon/state/onoff"
+      mode_command_topic: "madelon/ctrl/onoff"
+      modes:
+        - "off"
+        - "cool"
+      preset_mode_command_topic: "madelon/ctrl/mode"
+      preset_mode_state_topic: "madelon/state/mode"
+      preset_modes:
+        - "auto"
+        - "manual"
+        - "off"
+        - "bypass_auto"
+        - "bypass_manual"
+      fan_mode_command_topic: "madelon/ctrl/speed"
+      fan_mode_state_topic: "madelon/state/speed"
+      fan_modes:
+        - "low"
+        - "medium"
+        - "high"
+      temperature_state_topic: "madelon/state/temp"
+      current_humidity_topic: "madelon/state/humi"
+      qos: 1
+      payload_on: "ON"
+      payload_off: "OFF"
+#   fan:
+#     - name: 迈迪龙新风
+#       unique_id: madelon_doas
+#       state_topic: "doas/state/power"
+#       command_topic: "doas/ctrl/mode"
+#       percentage_state_topic: "doas/state/speed"
+#       percentage_command_topic: "doas/ctrl/speed"
+#       speed_range_min: 1
+#       speed_range_max: 3
+#     #   preset_mode_state_topic: "doas/state/mode"
+#     #   preset_mode_command_topic: "doas/ctrl/mode"
+#     #   preset_modes:
+#     #   - "自动"
+#     #   - "手动"
+#     #   - "旁通开"
+#     #   - "旁通关"
+#       qos: 1
+#       payload_on: "开机"
+#       payload_off: "关机"
+#   sensor:
+#     - name: 新风室温
+#       unique_id: doas-temp
+#       state_topic: "doas/state/temp"
+#       unit_of_measurement: '℃'
+#     - name: 新风模式
+#       unique_id: doas-mode
+#       state_topic: "doas/state/mode"
+#     - name: 新风风速
+#       unique_id: doas-speed
+#       state_topic: "doas/state/speed"
