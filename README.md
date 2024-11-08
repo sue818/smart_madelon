@@ -23,6 +23,18 @@ MQTT Device < -- > NodeRed Flow < -- > RS485 TCP server
 
 src code directory `mqtt_solution`
 
+### Features
+- 支持电源控制
+- 支持风速控制 (暂时不支持送风排风单独控制）
+- 支持读取新风机提供的温湿度数据
+- 支持设置模式：
+ - 手动
+ - 自动
+ - 定时（暂时不支持调整定时）
+ - 手动/旁通开
+ - 自动/旁通开
+ - 定时/旁通开（暂时不支持调整定时）
+
 ### Usage
 #### Config
 Put ventilation.yaml into packages
@@ -104,6 +116,8 @@ style: |
 
 ## TODO list
 
+- [ ]Separate supply air and exhaust air speed control
+- [ ]Support timer feature
 - [ ]Add more stats as sensors and switches
 - [ ]Home Assistant Custom Integration
 
