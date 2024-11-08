@@ -27,8 +27,10 @@ src code directory `mqtt_solution`
 #### Config
 Put ventilation.yaml into packages
 
-`mkdir -p packages`
-`mv ventilation.yaml packages`
+```bash
+mkdir -p packages
+mv ventilation.yaml packages
+```
 
 add this line into configuration.yaml
 ```yaml
