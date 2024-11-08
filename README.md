@@ -2,6 +2,9 @@
 
 迈迪龙新风接入Home Assistant解决方案
 
+## Datasheets
+![Datasheets](assets/datasheets.jpg)
+
 ## Hardware Dependencies
 RS485转WIFI模块 接在新风面板后面
 
@@ -14,7 +17,7 @@ Example:
 ### Config
 参考此贴：https://bbs.hassbian.com/thread-23091-1-1.html
 
-## 现有的方案
+## Current Solution
 
 MQTT Device < -- > NodeRed Flow < -- > RS485 TCP server 
 
@@ -22,7 +25,11 @@ src code directory `mqtt_solution`
 
 ### Usage
 #### Config
+Put ventilation.yaml into packages
+
 `mkdir -p packages`
+`mv ventilation.yaml packages`
+
 add this line into configuration.yaml
 ```yaml
 homeassistant:
@@ -93,8 +100,8 @@ style: |
   }
 ```
 
+## TODO list
 
-## 未来打算做的方案
-Home Assistant Custom Integration
+- [ ]Add more stats as sensors and switches
+- [ ]Home Assistant Custom Integration
 
-TODO
