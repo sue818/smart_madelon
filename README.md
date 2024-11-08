@@ -2,6 +2,11 @@
 
 迈迪龙新风接入Home Assistant解决方案
 
+## Prerequisite
+Home Assistant
+MQTT Broker
+NodeRed(Required for current solution)
+
 ## Datasheets
 ![Datasheets](assets/datasheets.jpg)
 
