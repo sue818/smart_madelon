@@ -1,1 +1,1 @@
-DOMAIN = "fresh_air_system"
+DOMAIN = "madelon_ventilation"

@@ -3,16 +3,10 @@ from .const import DOMAIN
 from .fresh_air_controller import FreshAirSystem
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Set up the Fresh Air System component."""
-    # 从配置中获取主机地址
+    """Set up the Madelon Ventilation component."""
     host = config[DOMAIN].get("host")
-    
-    # 初始化 FreshAirSystem 实例
     system = FreshAirSystem(host)
-    
-    # 将实例存储在 hass.data 中
     hass.data[DOMAIN] = {"system": system}
-    
     return True
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
