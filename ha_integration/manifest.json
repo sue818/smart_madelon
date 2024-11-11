@@ -1,0 +1,18 @@
+{
+  "domain": "madelon_ventilation",
+  "name": "Madelon Ventilation",
+  "version": "0.1.0",
+  "documentation": "https://github.com/mimiqdev/smart_madelon#readme",
+  "issue_tracker": "https://github.com/mimiqdev/smark_madelon/issues",
+  "requirements": [
+    "pymodbus==3.6.9"
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@mimiqdev"
+  ],
+  "homeassistant": "2024.11.1",
+  "config_flow": false,
+  "iot_class": "local_polling",
+  "integration_type": "device"
+}
