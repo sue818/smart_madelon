@@ -1,0 +1,141 @@
+from enum import Enum
+from ha_integration.modbus_client import ModbusClient
+
+__all__ = ['FreshAirSystem', 'OperationMode']
+
+class OperationMode(Enum):
+    MANUAL = 0
+    AUTO = 1
+    TIMER = 2
+
+class FreshAirSystem:
+    """新风系统控制类"""
+    
+    # 寄存器地址映射
+    REGISTERS = {
+        'power': 0,        # 电源控制
+        'mode': 4,         # 运行模式
+        'supply_speed': 7, # 送风速度设置
+        'exhaust_speed': 8,# 排风速度设置
+        'bypass': 9,       # 旁通开关
+        'actual_supply': 12,# 实际送风速度
+        'actual_exhaust': 13,# 实际排风速度
+        'temperature': 16, # 温度
+        'humidity': 17,    # 湿度
+    }
+
+    def __init__(self, host, port=8899):
+        self.modbus = ModbusClient(host=host, port=port)
+        self._registers_cache = None
+
+    def _read_all_registers(self):
+        """一次性读取所有相关寄存器"""
+        start_address = min(self.REGISTERS.values())
+        count = max(self.REGISTERS.values()) - start_address + 1
+        self._registers_cache = self.modbus.read_registers(start_address, count)
+
+    def _get_register_value(self, name):
+        """从缓存中获取寄存器值"""
+        if self._registers_cache is None:
+            self._read_all_registers()
+        address = self.REGISTERS[name]
+        return self._registers_cache[address] if self._registers_cache else None
+
+    def _validate_speed(self, speed):
+        if not 1 <= speed <= 3:
+            raise ValueError("风速必须在1-3之间")
+        return speed
+
+    @property
+    def power(self):
+        """获取电源状态"""
+        return bool(self._get_register_value('power'))
+
+    @power.setter
+    def power(self, state: bool):
+        """设置电源状态"""
+        self.modbus.write_single_register(self.REGISTERS['power'], int(state))
+
+    @property
+    def mode(self):
+        """获取运行模式"""
+        return OperationMode(self._get_register_value('mode'))
+
+    @mode.setter
+    def mode(self, mode: OperationMode):
+        """设置运行模式"""
+        self.modbus.write_single_register(self.REGISTERS['mode'], mode.value)
+
+    @property
+    def supply_speed(self):
+        """获取送风速度设置"""
+        return self._get_register_value('supply_speed')
+
+    @supply_speed.setter
+    def supply_speed(self, speed: int):
+        """设置送风速度"""
+        self.modbus.write_single_register(self.REGISTERS['supply_speed'], 
+                                        self._validate_speed(speed))
+
+    @property
+    def exhaust_speed(self):
+        """获取排风速度设置"""
+        return self._get_register_value('exhaust_speed')
+
+    @exhaust_speed.setter
+    def exhaust_speed(self, speed: int):
+        """设置排风速度"""
+        self.modbus.write_single_register(self.REGISTERS['exhaust_speed'], 
+                                        self._validate_speed(speed))
+
+    @property
+    def bypass(self):
+        """获取旁通状态"""
+        return bool(self._get_register_value('bypass'))
+
+    @bypass.setter
+    def bypass(self, state: bool):
+        """设置旁通状态"""
+        self.modbus.write_single_register(self.REGISTERS['bypass'], int(state))
+
+    @property
+    def actual_supply_speed(self):
+        """获取实际送风速度"""
+        return self._get_register_value('actual_supply')
+
+    @property
+    def actual_exhaust_speed(self):
+        """获取实际排风速度"""
+        return self._get_register_value('actual_exhaust')
+
+    @property
+    def temperature(self):
+        """获取温度（°C）"""
+        return self._get_register_value('temperature') / 10
+
+    @property
+    def humidity(self):
+        """获取湿度（%）"""
+        return self._get_register_value('humidity') / 10
+
+# 只在直接运行此文件时执行测试代码
+if __name__ == "__main__":
+    def test_fresh_air_system():
+        host = "192.168.6.137"
+        system = FreshAirSystem(host)
+
+        # 读取所有状态
+        # print(f"电源状态: {system.power}")
+        # print(f"运行模式: {system.mode}")
+        # print(f"送风速度设置: {system.supply_speed}")
+        # print(f"排风速度设置: {system.exhaust_speed}")
+        # print(f"旁通状态: {system.bypass}")
+        # print(f"实际送风速度: {system.actual_supply_speed}")
+        # print(f"实际排风速度: {system.actual_exhaust_speed}")
+        # print(f"温度: {system.temperature}°C")
+        # print(f"湿度: {system.humidity}%")
+
+        system.power = True
+        print(f"电源状态: {system.power}")
+
+    test_fresh_air_system()

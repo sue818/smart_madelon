@@ -4,13 +4,12 @@ from pymodbus import (
     ModbusException,
     pymodbus_apply_logging_config,
 )
-
 import logging
 
 # Enable logging
 logging.basicConfig()
 log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.WARNING)
 
 class ModbusClient:
     def __init__(self, host, port=8899):
@@ -32,28 +31,8 @@ class ModbusClient:
         """Write a single register using FC06."""
         try:
             self.client.connect()
-            response = self.client.write_register(address, value)
+            response = self.client.write_register(address, value, slave=1)
             if response.isError():
                 print(f"Error writing register: {response}")
         finally:
             self.client.close()
-
-# Test the functions
-def test_modbus_client():
-    # host = "localhost"
-    host = "192.168.6.137"
-
-    client = ModbusClient(host)
-
-    # Test reading registers
-    print("Reading registers:")
-    registers = client.read_registers(start_address=0, count=5)
-    print(f"Registers: {registers}")
-
-    # Test writing a single register
-    # print("Writing a single register:")
-    # client.write_single_register(address=0, value=1)
-
-
-if __name__ == "__main__":
-    test_modbus_client()
