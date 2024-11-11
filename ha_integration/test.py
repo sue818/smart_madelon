@@ -5,6 +5,8 @@ from pymodbus import (
     pymodbus_apply_logging_config,
 )
 
+import logging
+
 # Enable logging
 logging.basicConfig()
 log = logging.getLogger()
@@ -38,8 +40,8 @@ class ModbusClient:
 
 # Test the functions
 def test_modbus_client():
-    host = "localhost"
-    # host = "192.168.6.137"
+    # host = "localhost"
+    host = "192.168.6.137"
 
     client = ModbusClient(host)
 
