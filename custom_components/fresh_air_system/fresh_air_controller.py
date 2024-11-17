@@ -3,7 +3,7 @@ from pymodbus.client import ModbusTcpClient
 from pymodbus import (
     ExceptionResponse,
     ModbusException,
-    pymodbus_apply_logging_config,
+    # pymodbus_apply_logging_config,
 )
 import logging
 
@@ -159,6 +159,7 @@ class FreshAirSystem:
 if __name__ == "__main__":
     def test_fresh_air_system():
         host = "192.168.6.137"
+        # host="127.0.0.1"
         system = FreshAirSystem(host)
 
         # 读取所有状态
@@ -172,7 +173,7 @@ if __name__ == "__main__":
         # print(f"温度: {system.temperature}°C")
         # print(f"湿度: {system.humidity}%")
 
-        system.power = True
+        system.power = False
         print(f"电源状态: {system.power}")
 
     test_fresh_air_system()

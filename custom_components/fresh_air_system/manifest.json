@@ -7,7 +7,7 @@
   "requirements": [
     "pymodbus==3.6.9"
   ],
-  "dependencies": ["fan"],
+  "dependencies": ["fan", "sensor", "switch"],
   "codeowners": [
     "@mimiqdev"
   ],

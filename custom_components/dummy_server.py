@@ -8,7 +8,11 @@ import logging
 # Configure logging
 logging.basicConfig()
 log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.WARNING)
+
+# # Set pymodbus logging level
+# pymodbus_log = logging.getLogger("pymodbus")
+# pymodbus_log.setLevel(logging.WARNING)
 
 # Create a Modbus data store with some initial values
 store = ModbusSlaveContext(
@@ -30,7 +34,7 @@ async def run_server():
     await StartAsyncTcpServer(
         context=context,
         identity=identity,
-        address=("localhost", 5020)
+        address=("localhost", 8899)
     )
 
 if __name__ == "__main__":
