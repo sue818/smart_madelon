@@ -12,10 +12,21 @@ async def async_setup(hass: HomeAssistant, config: dict):
     return True
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the Fresh Air System entities."""
-    from .fan import async_setup_entry as setup_fan
-    from .sensor import async_setup_entry as setup_sensor
-    from .switch import async_setup_entry as setup_switch
-    await setup_fan(hass, config_entry, async_add_entities)
-    await setup_sensor(hass, config_entry, async_add_entities)
-    await setup_switch(hass, config_entry, async_add_entities)
+    """Set up the Fresh Air System from a config entry."""
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(config_entry, "fan")
+    )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(config_entry, "sensor")
+    )
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(config_entry, "switch")
+    )
+    return Ture
+    # """Set up the Fresh Air System entities."""
+    # from .fan import async_setup_entry as setup_fan
+    # from .sensor import async_setup_entry as setup_sensor
+    # from .switch import async_setup_entry as setup_switch
+    # await setup_fan(hass, config_entry, async_add_entities)
+    # await setup_sensor(hass, config_entry, async_add_entities)
+    # await setup_switch(hass, config_entry, async_add_entities)
