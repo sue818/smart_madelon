@@ -1,25 +1,22 @@
-from homeassistant.components.fan import FanEntity
+from homeassistant.components.fan import FanEntity, SUPPORT_SET_SPEED
 from .const import DOMAIN
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Fresh Air System fan."""
-    # 从 hass.data 中获取 FreshAirSystem 实例
     system = hass.data[DOMAIN]["system"]
-    
-    # 添加风扇实体
     async_add_entities([FreshAirFan(system)])
 
 class FreshAirFan(FanEntity):
     def __init__(self, system):
         self._system = system
         self._attr_name = "Fresh Air Fan"
-        self._attr_speed = system.supply_speed
         self._attr_is_on = system.power
+        self._attr_percentage = self._get_percentage(system.supply_speed)
 
     @property
-    def speed_list(self):
-        """Return the list of available speeds."""
-        return ["off", "low", "medium", "high"]
+    def supported_features(self):
+        """Flag supported features."""
+        return SUPPORT_SET_SPEED
 
     @property
     def is_on(self):
@@ -27,28 +24,48 @@ class FreshAirFan(FanEntity):
         return self._system.power
 
     @property
-    def speed(self):
-        """Return the current speed."""
-        speed_map = {0: "off", 1: "low", 2: "medium", 3: "high"}
-        return speed_map.get(self._system.supply_speed, "off")
+    def percentage(self):
+        """Return the current speed as a percentage."""
+        return self._get_percentage(self._system.supply_speed)
 
-    async def async_turn_on(self, speed=None, **kwargs):
+    @property
+    def speed_count(self):
+        """Return the number of speeds the fan supports."""
+        return 3  # low, medium, high
+
+    def _get_percentage(self, speed_value):
+        """Convert speed value to percentage."""
+        speed_map = {0: 0, 1: 33, 2: 66, 3: 100}
+        return speed_map.get(speed_value, 0)
+
+    def _get_speed_value(self, percentage):
+        """Convert percentage to speed value."""
+        if percentage == 0:
+            return 0
+        elif percentage <= 33:
+            return 1
+        elif percentage <= 66:
+            return 2
+        else:
+            return 3
+
+    async def async_turn_on(self, percentage=None, **kwargs):
         """Turn on the fan."""
         if not self._system.power:
             self._system.power = True
-        if speed:
-            await self.async_set_speed(speed)
+        if percentage is not None:
+            await self.async_set_percentage(percentage)
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         """Turn off the fan."""
         self._system.power = False
-        self._attr_speed = "off"
+        self._attr_percentage = 0
         self.async_write_ha_state()
 
-    async def async_set_speed(self, speed):
-        """Set the speed of the fan."""
-        speed_map = {"off": 0, "low": 1, "medium": 2, "high": 3}
-        speed_value = speed_map.get(speed, 0)
+    async def async_set_percentage(self, percentage):
+        """Set the speed of the fan as a percentage."""
+        speed_value = self._get_speed_value(percentage)
 
         if speed_value == 0:
             await self.async_turn_off()
@@ -56,5 +73,5 @@ class FreshAirFan(FanEntity):
             if not self._system.power:
                 self._system.power = True
             self._system.supply_speed = speed_value
-            self._attr_speed = speed
+            self._attr_percentage = percentage
             self.async_write_ha_state() 
