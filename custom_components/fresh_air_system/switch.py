@@ -8,6 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+import logging
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -16,6 +17,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the Fresh Air System switch based on a config entry."""
     # 从 hass.data 中获取 FreshAirSystem 实例
+    logging.getLogger(__name__).info("Setting up Fresh Air System switch")
     data = hass.data[DOMAIN][entry.entry_id]
     
     # 添加开关实体
