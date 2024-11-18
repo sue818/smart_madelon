@@ -9,17 +9,7 @@ from .const import DOMAIN
 from .fresh_air_controller import FreshAirSystem
 import logging
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.FAN, Platform.SWITCH]
-
-# async def async_setup(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-#     """Set up the Madelon Ventilation component."""
-#     logging.getLogger(__name__).info("Setting up Madelon Ventilation")
-
-#     hass.data.setdefault(DOMAIN, {})
-#     host = entry.data[CONF_HOST]
-#     system = FreshAirSystem(host)
-#     hass.data[DOMAIN] = {"system": system}
-#     return True
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.FAN]
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up the Fresh Air System from a config entry."""
