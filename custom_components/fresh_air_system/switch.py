@@ -1,7 +1,13 @@
-from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers.entity import DeviceInfo
 from .const import DOMAIN
-from homeassistant.core import HomeAssistant, ConfigEntry, AddEntitiesCallback
+from __future__ import annotations
+
+from typing import Any
+
+from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -10,12 +16,14 @@ async def async_setup_entry(
 ) -> None:
     """Set up the Fresh Air System switch based on a config entry."""
     # 从 hass.data 中获取 FreshAirSystem 实例
-    system = hass.data[DOMAIN][entry.entry_id]["system"]
+    data = hass.data[DOMAIN][entry.entry_id]
     
     # 添加开关实体
-    async_add_entities([FreshAirPowerSwitch(system)])
+    async_add_entities([FreshAirPowerSwitch(data['system'])])
 
 class FreshAirPowerSwitch(SwitchEntity):
+    _attr_device_class = SwitchDeviceClass.SWITCH
+
     def __init__(self, system):
         self._attr_has_entity_name = True
         self._system = system
