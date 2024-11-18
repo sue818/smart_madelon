@@ -1,4 +1,5 @@
 from homeassistant.components.fan import FanEntity, SUPPORT_SET_SPEED
+from homeassistant.helpers.entity import DeviceInfo
 from .const import DOMAIN
 import logging
 
@@ -15,6 +16,16 @@ class FreshAirFan(FanEntity):
         self._attr_name = "Fresh Air Fan"
         self._attr_is_on = system.power
         self._attr_percentage = self._get_percentage(system.supply_speed)
+        self._attr_unique_id = f"{DOMAIN}_fan_{system.id}"
+    @property
+    def device_info(self):
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._system.id)},
+            name="Fresh Air System",
+            manufacturer="Madelon",
+            model="Model XYZ",
+            sw_version="1.0",
+        )
 
     @property
     def supported_features(self):
