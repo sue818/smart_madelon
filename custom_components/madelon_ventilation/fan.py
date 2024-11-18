@@ -115,9 +115,9 @@ class FreshAirFan(FanEntity):
         else:
             if not self._system.power:
                 self._system.power = True
+            # Update both supply and exhaust speeds
+            self._system.supply_speed = speed_value
+            self._system.exhaust_speed = speed_value
 
-        # Update both supply and exhaust speeds
-        self._system.supply_speed = speed_value
-        self._system.exhaust_speed = speed_value
         self._attr_percentage = percentage
         self._update_state_from_system()
