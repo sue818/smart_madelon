@@ -1,4 +1,4 @@
-from homeassistant.components.fan import FanEntity, SUPPORT_SET_SPEED
+from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.const import CONF_HOST
@@ -42,7 +42,7 @@ class FreshAirFan(FanEntity):
     @property
     def supported_features(self):
         """Flag supported features."""
-        return SUPPORT_SET_SPEED
+        return FanEntityFeature.SET_SPEED
 
     @property
     def is_on(self):
