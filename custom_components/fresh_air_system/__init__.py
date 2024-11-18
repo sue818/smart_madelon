@@ -3,7 +3,7 @@ from .const import DOMAIN
 from .fresh_air_controller import FreshAirSystem
 import logging
 
-async def async_setup(hass: HomeAssistant, config: dict):
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the Madelon Ventilation component."""
     logging.getLogger(__name__).info("Setting up Madelon Ventilation")
     host = config[DOMAIN].get("host")
@@ -11,7 +11,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
     hass.data[DOMAIN] = {"system": system}
     return True
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> bool:
     """Set up the Fresh Air System from a config entry."""
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, "fan")
@@ -23,10 +23,3 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         hass.config_entries.async_forward_entry_setup(config_entry, "switch")
     )
     return True
-    # """Set up the Fresh Air System entities."""
-    # from .fan import async_setup_entry as setup_fan
-    # from .sensor import async_setup_entry as setup_sensor
-    # from .switch import async_setup_entry as setup_switch
-    # await setup_fan(hass, config_entry, async_add_entities)
-    # await setup_sensor(hass, config_entry, async_add_entities)
-    # await setup_switch(hass, config_entry, async_add_entities)

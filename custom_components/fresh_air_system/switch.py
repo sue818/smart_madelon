@@ -1,10 +1,15 @@
 from homeassistant.components.switch import SwitchEntity
 from .const import DOMAIN
+from homeassistant.core import HomeAssistant, ConfigEntry, AddEntitiesCallback
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the Fresh Air System switch."""
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the Fresh Air System switch based on a config entry."""
     # 从 hass.data 中获取 FreshAirSystem 实例
-    system = hass.data[DOMAIN]["system"]
+    system = hass.data[DOMAIN][entry.entry_id]["system"]
     
     # 添加开关实体
     async_add_entities([FreshAirPowerSwitch(system)])
