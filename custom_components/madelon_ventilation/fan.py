@@ -1,3 +1,4 @@
+from typing import Any
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -91,7 +92,7 @@ class FreshAirFan(FanEntity):
         else:
             return 3
 
-    async def async_turn_on(self, percentage=None, **kwargs):
+    async def async_turn_on(self, percentage=None, **kwargs: Any) -> None:
         """Turn the fan on."""
         if percentage is not None:
             await self.async_set_percentage(percentage)
