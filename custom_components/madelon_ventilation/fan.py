@@ -111,7 +111,8 @@ class FreshAirFan(FanEntity):
         speed_value = self._get_speed_value(percentage)
 
         if speed_value == 0:
-            if not self._system.power:
+            # Turn off the fan if the speed is 0
+            if self._system.power:
                 self._system.power = False
         else:
             if not self._system.power:
