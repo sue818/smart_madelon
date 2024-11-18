@@ -102,7 +102,8 @@ class FreshAirFan(FanEntity):
   
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the fan off.""" 
-        await self.async_set_percentage(0)
+        self._system.power = False
+        self._attr_percentage = 0
         self._update_state_from_system()
         await self.async_update_cache(None)
 
