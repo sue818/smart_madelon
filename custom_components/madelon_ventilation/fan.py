@@ -2,17 +2,26 @@ from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.const import CONF_HOST
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_time_interval
+from datetime import timedelta
 from .const import DOMAIN
 from .fresh_air_controller import FreshAirSystem
 import logging
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the Fresh Air System fan."""
     logging.getLogger(__name__).info("Setting up Fresh Air System fan")
-    async_add_entities([FreshAirFan(config_entry, hass.data[DOMAIN][config_entry.entry_id]["system"])])
+    system = hass.data[DOMAIN][config_entry.entry_id]["system"]
+    fan = FreshAirFan(config_entry, system)
+    async_add_entities([fan])
+
+    # Schedule regular updates for the FreshAirSystem cache
+    async_track_time_interval(hass, fan.async_update_cache, timedelta(seconds=30))
 
 class FreshAirFan(FanEntity):
-    def __init__(self, entry: ConfigEntry, system):
+    def __init__(self, entry: ConfigEntry, system: FreshAirSystem):
         super().__init__()
         self._attr_has_entity_name = True
         self._system = system
@@ -20,7 +29,11 @@ class FreshAirFan(FanEntity):
         self._attr_is_on = False
         self._attr_percentage = self._get_percentage(0)
         self._attr_unique_id = f"{DOMAIN}_fan_{system.unique_identifier}"
-        # self._update_state_from_system()
+
+    async def async_update_cache(self, _):
+        """Asynchronously update the FreshAirSystem cache."""
+        self._system._read_all_registers()
+        self._update_state_from_system()
 
     def _update_state_from_system(self):
         """Update the fan's state from the FreshAirSystem."""
