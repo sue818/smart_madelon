@@ -6,8 +6,6 @@ from pymodbus import (
     # pymodbus_apply_logging_config,
 )
 import logging
-from homeassistant.helpers.event import async_track_time_interval
-from datetime import timedelta
 
 # Enable logging
 logging.basicConfig()
@@ -63,21 +61,12 @@ class FreshAirSystem:
         'humidity': 17,    # 湿度
     }
 
-    def __init__(self, host, port=8899, hass=None):
+    def __init__(self, host, port=8899):
         self.modbus = ModbusClient(host=host, port=port)
         self._registers_cache = None
         self.unique_identifier = f"{host}:{port}"  # Use host and port as a unique identifier
         self.logger = logging.getLogger(__name__)
         self.logger.debug(f"Initialized FreshAirSystem with host: {host}, port: {port}")
-
-        # Schedule regular updates if hass is provided
-        if hass:
-            async_track_time_interval(hass, self.async_update_cache, timedelta(seconds=30))
-
-    async def async_update_cache(self, _):
-        """Asynchronously update the cache of register values."""
-        self.logger.debug("Updating register cache")
-        self._read_all_registers()
 
     def _read_all_registers(self):
         """一次性读取所有相关寄存器"""
