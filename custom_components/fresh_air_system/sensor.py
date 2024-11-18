@@ -14,6 +14,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class FreshAirTemperatureSensor(SensorEntity):
     def __init__(self, system):
+        self._attr_has_entity_name = True
         self._system = system
         self._attr_name = "Fresh Air Temperature"
         self._attr_native_unit_of_measurement = "°C"
@@ -24,6 +25,7 @@ class FreshAirTemperatureSensor(SensorEntity):
 
 class FreshAirHumiditySensor(SensorEntity):
     def __init__(self, system):
+        self._attr_has_entity_name = True
         self._system = system
         self._attr_name = "Fresh Air Humidity"
         self._attr_native_unit_of_measurement = "%"

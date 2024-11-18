@@ -16,6 +16,7 @@ async def async_setup_entry(
 
 class FreshAirPowerSwitch(SwitchEntity):
     def __init__(self, system):
+        self._attr_has_entity_name = True
         self._system = system
         self._attr_name = "Fresh Air Power"
         self._attr_is_on = system.power
