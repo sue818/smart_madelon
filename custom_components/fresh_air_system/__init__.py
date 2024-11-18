@@ -22,7 +22,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     hass.async_create_task(
         hass.config_entries.async_forward_entry_setup(config_entry, "switch")
     )
-    return Ture
+    return True
     # """Set up the Fresh Air System entities."""
     # from .fan import async_setup_entry as setup_fan
     # from .sensor import async_setup_entry as setup_sensor
