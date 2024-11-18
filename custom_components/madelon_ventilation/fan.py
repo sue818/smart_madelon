@@ -1,17 +1,31 @@
 from homeassistant.components.fan import FanEntity, SUPPORT_SET_SPEED
+from homeassistant.helpers.entity import DeviceInfo
 from .const import DOMAIN
+import logging
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Fresh Air System fan."""
+    logging.getLogger(__name__).info("Setting up Fresh Air System fan")
     system = hass.data[DOMAIN]["system"]
     async_add_entities([FreshAirFan(system)])
 
 class FreshAirFan(FanEntity):
     def __init__(self, system):
+        self._attr_has_entity_name = True
         self._system = system
         self._attr_name = "Fresh Air Fan"
         self._attr_is_on = system.power
         self._attr_percentage = self._get_percentage(system.supply_speed)
+        self._attr_unique_id = f"{DOMAIN}_fan_{system.id}"
+    @property
+    def device_info(self):
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._system.id)},
+            name="Fresh Air System",
+            manufacturer="Madelon",
+            model="Model XYZ",
+            sw_version="1.0",
+        )
 
     @property
     def supported_features(self):
