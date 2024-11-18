@@ -24,8 +24,9 @@ PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.FAN, Platform.SWITCH]
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up the Fresh Air System from a config entry."""
     hass.data.setdefault(DOMAIN, {})
-    hass_data = dict(hass.data[DOMAIN])
-    hass.data[DOMAIN][config_entry.entry_id] = hass_data
+    hass.data[DOMAIN][config_entry.entry_id] = {
+        "system": FreshAirSystem(config_entry.data[CONF_HOST])
+    }
     logging.getLogger(__name__).info("Setting up Madelon Ventilation entry")
 
     # Forward the setup to the platforms

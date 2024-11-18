@@ -1,6 +1,6 @@
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 from .const import DOMAIN
 from .fresh_air_controller import FreshAirSystem
 from homeassistant.components.sensor import (
@@ -18,12 +18,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Fresh Air System sensors."""
     logging.getLogger(__name__).info("Setting up Fresh Air System sensors")
     # 从 hass.data 中获取 FreshAirSystem 实例
-    host = config_entry.data[CONF_HOST]
-    system = FreshAirSystem(host)
+    # host = config_entry.data[CONF_HOST]
+    # system = FreshAirSystem(host)
     # 添加传感器实体
     async_add_entities([
-        FreshAirTemperatureSensor(config_entry, system),
-        FreshAirHumiditySensor(config_entry, system)
+        FreshAirTemperatureSensor(config_entry, hass.data[DOMAIN][config_entry.entry_id]["system"]),
+        FreshAirHumiditySensor(config_entry, hass.data[DOMAIN][config_entry.entry_id]["system"])
     ])
 
 # async def async_setup_platform(hass, config_entry, async_add_entities, discovery_info=None):
@@ -50,6 +50,17 @@ class FreshAirTemperatureSensor(SensorEntity):
         self._attr_unique_id = f"{DOMAIN}_temperature_sensor_{system.unique_identifier}"
         self._attr_native_value = None
 
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information about this entity."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._system.unique_identifier)},
+            name="Fresh Air System",
+            manufacturer="Madelon",
+            model="XIXI",
+            sw_version="1.0",
+        )
+
     async def async_update(self):
         self._attr_native_value = self._system.temperature
 
@@ -65,6 +76,17 @@ class FreshAirHumiditySensor(SensorEntity):
         self._system = system
         self._attr_unique_id = f"{DOMAIN}_humidity_sensor_{system.unique_identifier}"
         self._attr_native_value = None
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information about this entity."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._system.unique_identifier)},
+            name="Fresh Air System",
+            manufacturer="Madelon",
+            model="XIXI",
+            sw_version="1.0",
+        )
 
     async def async_update(self):
         self._attr_native_value = self._system.humidity
