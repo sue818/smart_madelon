@@ -11,7 +11,7 @@
   "codeowners": [
     "@mimiqdev"
   ],
-  "homeassistant": "2024.11.1",
+  "homeassistant": "2024.11.2",
   "config_flow": false,
   "iot_class": "local_polling",
   "integration_type": "device"
