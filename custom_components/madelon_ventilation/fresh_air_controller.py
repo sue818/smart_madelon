@@ -67,6 +67,11 @@ class FreshAirSystem:
         self.unique_identifier = f"{host}:{port}"  # Use host and port as a unique identifier
         self.logger = logging.getLogger(__name__)
         self.logger.debug(f"Initialized FreshAirSystem with host: {host}, port: {port}")
+        self.sensors = []  # List to hold sensor entities
+
+    def register_sensor(self, sensor):
+        """Register a sensor entity with the system."""
+        self.sensors.append(sensor)
 
     def _read_all_registers(self):
         """一次性读取所有相关寄存器"""
@@ -75,6 +80,10 @@ class FreshAirSystem:
         self.logger.debug(f"Reading all registers from {start_address} to {start_address + count - 1}")
         self._registers_cache = self.modbus.read_registers(start_address, count)
         self.logger.debug(f"Registers read: {self._registers_cache}")
+
+        # Update all registered sensors
+        for sensor in self.sensors:
+            sensor.async_schedule_update_ha_state(True)
 
     def _get_register_value(self, name):
         """从缓存中获取寄存器值"""

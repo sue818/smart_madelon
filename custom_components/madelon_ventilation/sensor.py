@@ -17,25 +17,16 @@ import logging
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Fresh Air System sensors."""
     logging.getLogger(__name__).info("Setting up Fresh Air System sensors")
-    # 从 hass.data 中获取 FreshAirSystem 实例
-    # host = config_entry.data[CONF_HOST]
-    # system = FreshAirSystem(host)
-    # 添加传感器实体
-    async_add_entities([
-        FreshAirTemperatureSensor(config_entry, hass.data[DOMAIN][config_entry.entry_id]["system"]),
-        FreshAirHumiditySensor(config_entry, hass.data[DOMAIN][config_entry.entry_id]["system"])
-    ])
+    fresh_air_system = hass.data[DOMAIN][config_entry.entry_id]["system"]
 
-# async def async_setup_platform(hass, config_entry, async_add_entities, discovery_info=None):
-#     """Set up the Fresh Air System sensors."""
-#     logging.getLogger(__name__).info("Setting up Fresh Air System sensors")
-#     # 从 hass.data 中获取 FreshAirSystem 实例
-#     system = hass.data[DOMAIN]["system"]
+    temperature_sensor = FreshAirTemperatureSensor(config_entry, fresh_air_system)
+    humidity_sensor = FreshAirHumiditySensor(config_entry, fresh_air_system)
 
-#     async_add_entities([
-#         FreshAirTemperatureSensor(config_entry, system),
-#         FreshAirHumiditySensor(config_entry, system)
-#     ])
+    # Register sensors with the system
+    fresh_air_system.register_sensor(temperature_sensor)
+    fresh_air_system.register_sensor(humidity_sensor)
+
+    async_add_entities([temperature_sensor, humidity_sensor])
 
 class FreshAirTemperatureSensor(SensorEntity):
     _attr_has_entity_name = True
