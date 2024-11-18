@@ -75,7 +75,7 @@ class FreshAirFan(FanEntity):
         else:
             return 3
 
-    async def async_turn_on(self, percentage=None, **kwargs):
+    async def async_turn_on(self, percentage=None, preset_mode=None, **kwargs):
         """Turn on the fan."""
         if not self._system.power:
             self._system.power = True
@@ -83,10 +83,11 @@ class FreshAirFan(FanEntity):
             await self.async_set_percentage(percentage)
         self._update_state_from_system()
 
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self, preset_mode=None, preset_value=None, **kwargs):
         """Turn off the fan."""
-        self._system.power = False
-        self._attr_percentage = 0
+        if self._system.power:
+            self._system.power = False
+        await self.async_set_percentage(0)
         self._update_state_from_system()
 
     async def async_set_percentage(self, percentage):
