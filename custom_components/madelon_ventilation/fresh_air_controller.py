@@ -104,9 +104,6 @@ class OperationMode(Enum):
     MANUAL = "manual"
     AUTO = "auto"
     TIMER = "timer"
-    MANUAL_BYPASS = "manual_bypass"
-    AUTO_BYPASS = "auto_bypass"
-    TIMER_BYPASS = "timer_bypass"
 
     @property
     def value(self) -> str:
@@ -277,24 +274,16 @@ class FreshAirSystem:
         mode_map = {
             0: OperationMode.MANUAL,
             1: OperationMode.AUTO,
-            2: OperationMode.TIMER,
-            3: OperationMode.MANUAL_BYPASS,
-            4: OperationMode.AUTO_BYPASS,
-            5: OperationMode.TIMER_BYPASS
+            2: OperationMode.TIMER
         }
-        converted_mode = mode_map.get(value, OperationMode.MANUAL)
-        self.logger.debug(f"Converting mode value {value} to {converted_mode}")
-        return converted_mode
+        return mode_map.get(value, OperationMode.MANUAL)
 
     def _convert_mode_string(self, mode: OperationMode) -> int:
         """Convert OperationMode to register value."""
         mode_map = {
             OperationMode.MANUAL: 0,
             OperationMode.AUTO: 1,
-            OperationMode.TIMER: 2,
-            OperationMode.MANUAL_BYPASS: 3,
-            OperationMode.AUTO_BYPASS: 4,
-            OperationMode.TIMER_BYPASS: 5
+            OperationMode.TIMER: 2
         }
         return mode_map.get(mode, 0)
 

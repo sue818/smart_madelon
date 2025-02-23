@@ -179,7 +179,7 @@ class MadelonBypassSwitch(SwitchEntity):
     def __init__(self, system: FreshAirSystem):
         """Initialize the bypass switch."""
         self._system = system
-        self._attr_name = "Bypass Mode"
+        self._attr_name = "Bypass"
         self._attr_unique_id = f"{system.unique_identifier}_bypass"
         self._attr_has_entity_name = True
         self._is_on = False

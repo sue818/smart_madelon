@@ -41,9 +41,6 @@ class FreshAirFan(FanEntity):
     PRESET_MANUAL = "Manual"
     PRESET_AUTO = "Auto"
     PRESET_TIMER = "Timer"
-    PRESET_MANUAL_BYPASS = "Manual + Bypass"
-    PRESET_AUTO_BYPASS = "Auto + Bypass"
-    PRESET_TIMER_BYPASS = "Timer + Bypass"
 
     def __init__(self, entry: ConfigEntry, system: FreshAirSystem):
         super().__init__()
@@ -53,13 +50,11 @@ class FreshAirFan(FanEntity):
         self._attr_is_on = False
         self._attr_percentage = 0
         self._attr_unique_id = f"{DOMAIN}_fan_{system.unique_identifier}"
+        # 只保留三个基本模式
         self._attr_preset_modes = [
             self.PRESET_MANUAL,
             self.PRESET_AUTO,
-            self.PRESET_TIMER,
-            self.PRESET_MANUAL_BYPASS,
-            self.PRESET_AUTO_BYPASS,
-            self.PRESET_TIMER_BYPASS
+            self.PRESET_TIMER
         ]
         self._attr_preset_mode = "Manual"
 
@@ -190,10 +185,7 @@ class FreshAirFan(FanEntity):
         mode_map = {
             OperationMode.MANUAL: "Manual",
             OperationMode.AUTO: "Auto",
-            OperationMode.TIMER: "Timer",
-            OperationMode.MANUAL_BYPASS: "Manual + Bypass",
-            OperationMode.AUTO_BYPASS: "Auto + Bypass",
-            OperationMode.TIMER_BYPASS: "Timer + Bypass"
+            OperationMode.TIMER: "Timer"
         }
         return mode_map.get(mode, "Manual")
 
@@ -202,9 +194,6 @@ class FreshAirFan(FanEntity):
         preset_map = {
             "Manual": OperationMode.MANUAL,
             "Auto": OperationMode.AUTO,
-            "Timer": OperationMode.TIMER,
-            "Manual + Bypass": OperationMode.MANUAL_BYPASS,
-            "Auto + Bypass": OperationMode.AUTO_BYPASS,
-            "Timer + Bypass": OperationMode.TIMER_BYPASS
+            "Timer": OperationMode.TIMER
         }
         return preset_map.get(preset, OperationMode.MANUAL)
