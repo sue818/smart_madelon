@@ -22,7 +22,8 @@ Example:
 ### Features
 - A Fan entity with speed control
 - Two sensors for temperature and humidity
-Other features like mode control and timer control will be added in future
+- Mode switches and Bypass switch
+
 
 ### Setup guide
 
@@ -35,16 +36,17 @@ Put this repo url into config:
 Download integration, then add integration:
 ![Step 3](assets/step3.png)
 
-Config your RS485 Module IP address:
+Config your RS485 Module IP address, port and device id:
 ![Step 4](assets/step4.png)
 
-You will find 3 new entities:
+You will find 7 new entities:
 ![Result](assets/result.png)
 
 ## TODO list
 
-- [x]Home Assistant Custom Integration
-- [ ]Separate supply air and exhaust air speed control
+- [x]Fan speed control with on/off
+- [x]Mode selection
 - [ ]Support timer feature
+- [ ]Separate supply air and exhaust air speed control
 - [ ]Add more stats as sensors and switches
 
