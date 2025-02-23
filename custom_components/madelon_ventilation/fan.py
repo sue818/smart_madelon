@@ -77,8 +77,7 @@ class FreshAirFan(FanEntity):
         return (
             FanEntityFeature.SET_SPEED |
             FanEntityFeature.TURN_ON |
-            FanEntityFeature.TURN_OFF |
-            FanEntityFeature.PRESET_MODE
+            FanEntityFeature.TURN_OFF
         )
 
     @property
