@@ -35,11 +35,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         # 设置初始状态
         for switch in switches:
             if isinstance(switch, MadelonModeSwitch):
-                if current_mode in [OperationMode.MANUAL, OperationMode.MANUAL_BYPASS] and switch._operation_mode == OperationMode.MANUAL:
-                    switch._is_on = True
-                elif current_mode in [OperationMode.AUTO, OperationMode.AUTO_BYPASS] and switch._operation_mode == OperationMode.AUTO:
-                    switch._is_on = True
-                elif current_mode in [OperationMode.TIMER, OperationMode.TIMER_BYPASS] and switch._operation_mode == OperationMode.TIMER:
+                # 简化模式匹配，不再检查 bypass 状态
+                if current_mode == switch._operation_mode:
                     switch._is_on = True
             elif isinstance(switch, MadelonBypassSwitch):
                 switch._is_on = system.bypass
@@ -79,28 +76,15 @@ class MadelonModeSwitch(SwitchEntity):
     def update(self) -> None:
         """Update the switch state."""
         try:
-            # 直接从缓存中获取模式
             current_mode = self._system.mode
             _LOGGER.debug(f"Switch {self._attr_name} got current_mode: {current_mode}")
             
             if current_mode is None:
                 self._is_on = False
-                _LOGGER.debug(f"Switch {self._attr_name} setting is_on to False (mode is None)")
                 return
 
-            # 检查当前模式是否匹配此开关的模式
-            old_state = self._is_on
-            if self._operation_mode == OperationMode.MANUAL:
-                self._is_on = current_mode in [OperationMode.MANUAL, OperationMode.MANUAL_BYPASS]
-            elif self._operation_mode == OperationMode.AUTO:
-                self._is_on = current_mode in [OperationMode.AUTO, OperationMode.AUTO_BYPASS]
-            elif self._operation_mode == OperationMode.TIMER:
-                self._is_on = current_mode in [OperationMode.TIMER, OperationMode.TIMER_BYPASS]
-            
-            if old_state != self._is_on:
-                _LOGGER.debug(
-                    f"Switch {self._attr_name} state changed from {old_state} to {self._is_on}"
-                )
+            # 直接比较基本模式，不需要考虑 bypass
+            self._is_on = (current_mode == self._operation_mode)
             
             _LOGGER.debug(
                 f"Switch {self._attr_name} update complete: "
@@ -109,68 +93,48 @@ class MadelonModeSwitch(SwitchEntity):
                 f"is_on={self._is_on}"
             )
         except Exception as e:
-            _LOGGER.error(f"Error updating switch {self._attr_name}: {e}", exc_info=True)
+            _LOGGER.error(f"Error updating switch {self._attr_name}: {e}")
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
         try:
-            current_mode = self._system.mode
-            new_mode = self._operation_mode
-
-            # 检查是否需要保持bypass状态
-            if current_mode and '_bypass' in current_mode.value:
-                new_mode = OperationMode.from_string(f"{self._operation_mode.value}_bypass")
+            # 直接设置基本模式，不需要考虑 bypass 状态
+            _LOGGER.debug(f"Switch {self._attr_name} turning on: setting mode to {self._operation_mode.value}")
             
-            _LOGGER.debug(f"Switch {self._attr_name} turning on: setting mode to {new_mode.value}")
-            
-            # 获取寄存器地址和值
             register_address = self._system.REGISTERS['mode']
-            register_value = self._system._convert_mode_string(new_mode)
+            register_value = self._system._convert_mode_string(self._operation_mode)
             
-            # 写入寄存器
             if self._system.modbus.write_single_register(register_address, register_value):
-                # 写入成功后直接更新缓存
                 self._system._update_cache_value('mode', register_value)
                 self.update()
-                # 通知其他相关实体更新状态
                 for sensor in self._system.sensors:
                     sensor.schedule_update_ha_state(True)
             else:
-                _LOGGER.error(f"Failed to set mode to {new_mode.value}")
+                _LOGGER.error(f"Failed to set mode to {self._operation_mode.value}")
                 
         except Exception as e:
-            _LOGGER.error(f"Error turning on switch {self._attr_name}: {e}", exc_info=True)
+            _LOGGER.error(f"Error turning on switch {self._attr_name}: {e}")
 
     def turn_off(self, **kwargs):
         """Turn the switch off."""
         try:
             if self._is_on:
-                current_mode = self._system.mode
-                new_mode = OperationMode.MANUAL
-
-                # 保持bypass状态
-                if current_mode and '_bypass' in current_mode.value:
-                    new_mode = OperationMode.MANUAL_BYPASS
-
-                _LOGGER.debug(f"Switch {self._attr_name} turning off: setting mode to {new_mode.value}")
+                # 关闭时直接切换到 MANUAL 模式，不需要考虑 bypass 状态
+                _LOGGER.debug(f"Switch {self._attr_name} turning off: setting mode to manual")
                 
-                # 获取寄存器地址和值
                 register_address = self._system.REGISTERS['mode']
-                register_value = self._system._convert_mode_string(new_mode)
+                register_value = self._system._convert_mode_string(OperationMode.MANUAL)
                 
-                # 写入寄存器
                 if self._system.modbus.write_single_register(register_address, register_value):
-                    # 写入成功后直接更新缓存
                     self._system._update_cache_value('mode', register_value)
                     self.update()
-                    # 通知其他相关实体更新状态
                     for sensor in self._system.sensors:
                         sensor.schedule_update_ha_state(True)
                 else:
-                    _LOGGER.error(f"Failed to set mode to {new_mode.value}")
-                    
+                    _LOGGER.error("Failed to set mode to manual")
+                
         except Exception as e:
-            _LOGGER.error(f"Error turning off switch {self._attr_name}: {e}", exc_info=True)
+            _LOGGER.error(f"Error turning off switch {self._attr_name}: {e}")
 
 
 class MadelonBypassSwitch(SwitchEntity):

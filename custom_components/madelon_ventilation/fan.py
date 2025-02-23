@@ -26,12 +26,13 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     async def async_update(now=None):
         """Update the entity."""
         try:
+            # 使用 async_add_executor_job 运行同步的 update 方法
             await hass.async_add_executor_job(fan.update)
-            # 只有当实体已经添加到 hass 后才调用 async_write_ha_state
-            if fan.hass:
-                await fan.async_write_ha_state()
+            # 确保实体已添加到 hass 并且状态有效
+            if fan.hass and fan.available:
+                fan.async_write_ha_state()
         except Exception as e:
-            logging.getLogger(__name__).error(f"Error updating fan state: {e}")
+            logging.getLogger(__name__).error(f"Error updating fan state: {e}", exc_info=True)
 
     # 使用事件调度器设置定期更新
     async_track_time_interval(hass, async_update, timedelta(seconds=30))
@@ -99,24 +100,27 @@ class FreshAirFan(FanEntity):
 
     def update(self):
         """Update the fan's state."""
-        power = self._system.power
-        speed = self._system.supply_speed
-        mode = self._system.mode
+        try:
+            power = self._system.power
+            speed = self._system.supply_speed
+            mode = self._system.mode
 
-        self._attr_is_on = power if power is not None else False
-        
-        # 直接计算百分比，不需要额外的方法
-        if not self._attr_is_on or speed is None:
-            self._attr_percentage = 0
-        else:
-            try:
-                self._attr_percentage = ordered_list_item_to_percentage(ORDERED_NAMED_FAN_SPEEDS, speed)
-            except ValueError:
-                logging.getLogger(__name__).warning(f"Invalid speed value: {speed}")
-                self._attr_percentage = 0
+            self._attr_is_on = power if power is not None else False
             
-        if mode is not None:
-            self._attr_preset_mode = self._convert_mode_to_preset(mode)
+            # 直接计算百分比，不需要额外的方法
+            if not self._attr_is_on or speed is None:
+                self._attr_percentage = 0
+            else:
+                try:
+                    self._attr_percentage = ordered_list_item_to_percentage(ORDERED_NAMED_FAN_SPEEDS, speed)
+                except ValueError:
+                    logging.getLogger(__name__).warning(f"Invalid speed value: {speed}")
+                    self._attr_percentage = 0
+                
+            if mode is not None:
+                self._attr_preset_mode = self._convert_mode_to_preset(mode)
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Error in fan update: {e}", exc_info=True)
 
     def turn_on(self, percentage: Optional[int] = None, preset_mode: Optional[str] = None, **kwargs: Any) -> None:
         """Turn on the fan.
