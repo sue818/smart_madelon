@@ -22,7 +22,7 @@ Example:
 ### Features
 - A Fan entity with speed control
 - Two sensors for temperature and humidity
-- Mode switches and Bypass switch
+- Auto Mode switch and Bypass switch
 
 
 ### Setup guide
@@ -41,6 +41,23 @@ Config your RS485 Module IP address, port and device id:
 
 You will find 7 new entities:
 ![Result](assets/result.png)
+
+
+### Example configuration.yaml section
+```
+homekit:
+  - filter:
+      include_entities:
+        # 新风
+        - fan.fresh_air_system_fan
+        - switch.fresh_air_system_auto_mode
+        - switch.fresh_air_system_bypass
+    entity_config:
+      switch.fresh_air_system_auto_mode:
+        name: '新风自动模式'
+      switch.fresh_air_system_bypass:
+        name: '新风旁通模式'
+```
 
 ## TODO list
 
