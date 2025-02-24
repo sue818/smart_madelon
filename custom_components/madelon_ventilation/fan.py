@@ -99,11 +99,10 @@ class FreshAirFan(FanEntity):
         try:
             power = self._system.power
             speed = self._system.supply_speed
-            mode = self._system.mode
 
             self._attr_is_on = power if power is not None else False
             
-            # 直接计算百分比，不需要额外的方法
+            # Calculate percentage
             if not self._attr_is_on or speed is None:
                 self._attr_percentage = 0
             else:
@@ -113,8 +112,6 @@ class FreshAirFan(FanEntity):
                     logging.getLogger(__name__).warning(f"Invalid speed value: {speed}")
                     self._attr_percentage = 0
                 
-            if mode is not None:
-                self._attr_preset_mode = self._convert_mode_to_preset(mode)
         except Exception as e:
             logging.getLogger(__name__).error(f"Error in fan update: {e}", exc_info=True)
 
