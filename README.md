@@ -39,8 +39,8 @@ Download integration, then add integration:
 Config your RS485 Module IP address, port and device id:
 ![Step 4](assets/step4.png)
 
-You will find 7 new entities:
-![Result](assets/result.png)
+You will find 5 new entities:
+![Result](assets/result.jpg)
 
 
 ### Example configuration.yaml section
@@ -57,6 +57,79 @@ homekit:
         name: '新风自动模式'
       switch.fresh_air_system_bypass:
         name: '新风旁通模式'
+```
+
+### Example HomeAssistant Card
+```
+type: custom:stack-in-card
+cards:
+  - type: custom:mushroom-fan-card
+    entity: fan.fresh_air_system_fan
+    icon: mdi:hvac
+    fill_container: true
+    show_percentage_control: true
+    show_oscillate_control: false
+    layout: horizontal
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: 温度
+        secondary: "{{ states('sensor.fresh_air_system_temperature') }}°C"
+        icon: mdi:thermometer
+        fill_container: true
+        layout: horizontal
+        icon_color: orange
+        style: |
+          ha-card {
+            --ha-card-height: 60px;
+          }
+      - type: custom:mushroom-template-card
+        primary: 湿度
+        secondary: "{{ states('sensor.fresh_air_system_humidity') }}%"
+        icon: mdi:water-percent
+        fill_container: true
+        layout: horizontal
+        icon_color: blue
+        style: |
+          ha-card {
+            --ha-card-height: 60px;
+          }
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: switch.fresh_air_system_auto_mode
+        name: 自动模式
+        icon: mdi:auto-fix
+        fill_container: true
+        layout: horizontal
+        tap_action:
+          action: toggle
+        style: |
+          ha-card {
+            --ha-card-height: 60px;
+          }
+      - type: custom:mushroom-entity-card
+        entity: switch.fresh_air_system_bypass
+        name: 旁通
+        icon: mdi:valve
+        fill_container: true
+        layout: horizontal
+        tap_action:
+          action: toggle
+        style: |
+          ha-card {
+            --ha-card-height: 60px;
+          }
+style: |
+  ha-card {
+    background: var(--ha-card-background, var(--card-background-color, white));
+    border-radius: var(--ha-card-border-radius, 12px);
+    padding: 12px;
+  }
 ```
 
 ## TODO list
