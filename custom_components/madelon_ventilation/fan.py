@@ -8,7 +8,12 @@ from homeassistant.helpers.event import async_track_time_interval
 # Helper function for percentage conversion
 from homeassistant.util.percentage import ordered_list_item_to_percentage, percentage_to_ordered_list_item
 from datetime import timedelta
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    DEVICE_MANUFACTURER,
+    DEVICE_MODEL,
+    DEVICE_SW_VERSION,
+)
 from .fresh_air_controller import FreshAirSystem, OperationMode
 import logging
 
@@ -39,10 +44,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
 
 
 class FreshAirFan(FanEntity):
-    PRESET_MANUAL = "Manual"
-    PRESET_AUTO = "Auto"
-    PRESET_TIMER = "Timer"
-
     def __init__(self, entry: ConfigEntry, system: FreshAirSystem):
         super().__init__()
         self._system = system
@@ -51,13 +52,9 @@ class FreshAirFan(FanEntity):
         self._attr_is_on = False
         self._attr_percentage = 0
         self._attr_unique_id = f"{DOMAIN}_fan_{system.unique_identifier}"
-        # 只保留三个基本模式
-        self._attr_preset_modes = [
-            self.PRESET_MANUAL,
-            self.PRESET_AUTO,
-            self.PRESET_TIMER
-        ]
-        self._attr_preset_mode = "Manual"
+        # Remove preset modes to prevent them from showing in HomeKit
+        self._attr_preset_modes = None
+        self._attr_preset_mode = None
 
     # Properties
     @property
@@ -66,9 +63,9 @@ class FreshAirFan(FanEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._system.unique_identifier)},
             name="Fresh Air System",
-            manufacturer="Madelon",
-            model="XIXI",
-            sw_version="1.0",
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+            sw_version=DEVICE_SW_VERSION,
         )
 
     @property
@@ -176,27 +173,7 @@ class FreshAirFan(FanEntity):
         self._system.exhaust_speed = speed
         self.update()
 
-    async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set the preset mode of the fan."""
-        if preset_mode in self._attr_preset_modes:
-            mode = self._convert_preset_to_mode(preset_mode)
-            self._system.mode = mode
-            self.update()
-
-    def _convert_mode_to_preset(self, mode: OperationMode) -> str:
-        """Convert system mode to preset mode."""
-        mode_map = {
-            OperationMode.MANUAL: "Manual",
-            OperationMode.AUTO: "Auto",
-            OperationMode.TIMER: "Timer"
-        }
-        return mode_map.get(mode, "Manual")
-
-    def _convert_preset_to_mode(self, preset: str) -> OperationMode:
-        """Convert preset mode to system mode."""
-        preset_map = {
-            "Manual": OperationMode.MANUAL,
-            "Auto": OperationMode.AUTO,
-            "Timer": OperationMode.TIMER
-        }
-        return preset_map.get(preset, OperationMode.MANUAL)
+    # Remove or comment out these preset-related methods
+    # async def async_set_preset_mode(self, preset_mode: str) -> None:
+    # def _convert_mode_to_preset(self, mode: OperationMode) -> str:
+    # def _convert_preset_to_mode(self, preset: str) -> OperationMode:

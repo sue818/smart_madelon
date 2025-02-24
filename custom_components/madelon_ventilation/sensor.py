@@ -1,7 +1,12 @@
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    DEVICE_MANUFACTURER,
+    DEVICE_MODEL,
+    DEVICE_SW_VERSION,
+)
 from .fresh_air_controller import FreshAirSystem
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -49,9 +54,9 @@ class FreshAirTemperatureSensor(SensorEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._system.unique_identifier)},
             name="Fresh Air System",
-            manufacturer="Madelon",
-            model="XIXI",
-            sw_version="1.0",
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+            sw_version=DEVICE_SW_VERSION,
         )
 
     def update(self) -> None:
@@ -78,9 +83,9 @@ class FreshAirHumiditySensor(SensorEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._system.unique_identifier)},
             name="Fresh Air System",
-            manufacturer="Madelon",
-            model="XIXI",
-            sw_version="1.0",
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+            sw_version=DEVICE_SW_VERSION,
         )
 
     def update(self) -> None:

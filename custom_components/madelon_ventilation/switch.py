@@ -4,7 +4,12 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.device_registry import DeviceInfo
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    DEVICE_MANUFACTURER,
+    DEVICE_MODEL,
+    DEVICE_SW_VERSION,
+)
 from .fresh_air_controller import FreshAirSystem, OperationMode
 import logging
 
@@ -63,9 +68,9 @@ class MadelonModeSwitch(SwitchEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._system.unique_identifier)},
             name="Fresh Air System",
-            manufacturer="Madelon",
-            model="XIXI",
-            sw_version="1.0",
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+            sw_version=DEVICE_SW_VERSION,
         )
 
     @property
@@ -154,9 +159,9 @@ class MadelonBypassSwitch(SwitchEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._system.unique_identifier)},
             name="Fresh Air System",
-            manufacturer="Madelon",
-            model="XIXI",
-            sw_version="1.0",
+            manufacturer=DEVICE_MANUFACTURER,
+            model=DEVICE_MODEL,
+            sw_version=DEVICE_SW_VERSION,
         )
 
     @property
